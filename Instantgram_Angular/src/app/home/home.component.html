@@ -1,0 +1,76 @@
+<div *ngIf="user" class="d-flex justify-content-center">
+  <div class="col-md-6 col-lg-8">
+    <h1>This is your newsfeed..</h1>
+    <h4>Search and upload content...</h4>
+    <div>
+      <form>
+        <div class="form-group">
+          <label>Select Content type:</label>
+          <select class="form-control" #postType>
+            <option selected>Picture</option>
+            <option>Video</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Content link:</label>
+          <input type="text" class="form-control" #postLoc>
+        </div>
+        <div class="form-group">
+          <button class="btn btn-primary mt-3" type="button" (click)="createPost(postType, postLoc)">Create post</button>
+        </div>
+      </form>
+    </div>
+    <div class="row d-flex justify-content-center my-5" *ngFor="let post of posts">
+      <div class="col-lg-10">
+        <!-- Card -->
+        <div class="card news-card">
+
+          <!-- Heading-->
+          <div class="card-body">
+            <div class="content d-flex justify-content-between">
+              <span>{{post.author ? post.author.firstname ? post.author.firstname : post.author.userName : 'null'}}</span>
+              <span>{{post.created}}</span>
+            </div>
+          </div>
+
+          <!-- Card image-->
+          <img *ngIf="post.contentType == '0'" class="card-img-top" src="{{post.location}}" alt="Card image cap">
+          <video *ngIf="post.contentType == '1'" crossOrigin="anonymous" class="card-img-top" controls>
+            <source src="{{post.location}}">
+            Your browser does not support the video tag.
+          </video>
+
+          <!-- Card content -->
+          <div class="card-body">
+
+            <!-- Social meta-->
+            <div class="social-meta d-flex justify-content-between">
+              <span><i class="far fa-heart"></i>{{post.likes}} likes</span>
+              <a type="button" role="button" data-toggle="collapse" data-target="#collapseComments{{post.postId}}"><i class="fas fa-comment"></i>{{post.comments ? post.comments.length : '0'}} comments</a>
+            </div>
+            <hr>
+            <div class="mb-3" id="collapseComments{{post.postId}}" *ngIf="post.comments">
+              <div class="card card-body">
+                <div *ngFor="let comment of post.comments" class="comment mb-2">
+                    <div class="d-flex justify-content-between"><a href="#" [routerLink]="['/user', comment.author ? comment.author.userName : 'noauthor']">{{comment.author ? (comment.author.firstname ? comment.author.firstname : comment.author.userName) : 'authotr undefined'}}</a><span>{{comment.created}}</span></div>
+                    <span class="mt-1">{{comment.message}}</span>
+                </div>
+              </div>
+            </div>
+            <!-- Comment input -->
+            <div class="md-form">
+              <i class="far fa-heart prefix"></i>
+              <input (keyup.enter)="sendMessage(document.getElementById('commenter' + post.postId), post.postId)" ng-model="messageToSend"  placeholder="Add Comment..." type="text" id="{{'commenter' + post.postId}}" class="form-control">
+            </div>
+
+          </div>
+          <!-- Card content -->
+
+        </div>
+        <!-- Card -->
+      </div>
+  </div>
+</div>
+<div *ngIf="!user">
+  Login to see your newsfeed... <button (click)="router.navigate(['/login'])">Login Form</button>
+</div>
